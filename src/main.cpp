@@ -3,11 +3,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <windows.h>
 
-#include "bots/ghess3.h"
 #include "hash.h"
 #include "strutture.h"
 #include "utente.h"
+#include "bots/ghess3.h"
+#include "stampa/stampa.h"
+
 
 Scacchiera posizione_iniziale() {
     Scacchiera scacchiera;
@@ -26,19 +29,6 @@ Scacchiera posizione_iniziale() {
     scacchiera.dirittiArrocco = ARROCCO_CORTO_BIANCO | ARROCCO_LUNGO_BIANCO | ARROCCO_CORTO_NERO | ARROCCO_LUNGO_NERO;
     scacchiera.storicoHash.push_back(hash::calcola(scacchiera));
     return scacchiera;
-}
-
-void stampa_scacchiera(const Scacchiera& scacchiera) {
-    std::cout << '\n';
-    for (int r = 0; r < 8; ++r) {
-        std::cout << 8 - r << "   ";
-        for (int c = 0; c < 8; ++c) {
-            const Pezzo pezzo = scacchiera.caselle[casella(r, c)];
-            std::cout << (pezzo == NESSUN_PEZZO ? '.' : pezzo) << ' ';
-        }
-        std::cout << '\n';
-    }
-    std::cout << "\n    a b c d e f g h\n\n";
 }
 
 bool partita_finita(Scacchiera& scacchiera) {
@@ -61,10 +51,12 @@ bool partita_finita(Scacchiera& scacchiera) {
 }
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8);
+
     Scacchiera scacchiera = posizione_iniziale();
     std::vector<Scacchiera> precedenti;
 
-    stampa_scacchiera(scacchiera);
+    stampa::stampa_scacchiera(scacchiera);
 
     while (!partita_finita(scacchiera)) {
         RisultatoRicerca risultato = scacchiera.turno ? utente::prossima(scacchiera) : ghess3::prossima(scacchiera);
@@ -76,7 +68,7 @@ int main() {
             precedenti.pop_back();
             scacchiera = precedenti.back();
             precedenti.pop_back();
-            stampa_scacchiera(scacchiera);
+            stampa::stampa_scacchiera(scacchiera);
             continue;
         }
         precedenti.push_back(scacchiera);
@@ -85,7 +77,7 @@ int main() {
         applica_mossa(scacchiera, risultato.migliore, stato);
         scacchiera.storicoHash.push_back(hash::calcola(scacchiera));
 
-        stampa_scacchiera(scacchiera);
+        stampa::stampa_scacchiera(scacchiera, risultato.migliore.a, risultato.migliore.da);
     }
 
     return 0;

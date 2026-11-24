@@ -1,6 +1,7 @@
 #include "ghess3.h"
 
-#define PROFONDITA_SHIFT 7.f
+//#define PROFONDITA_SHIFT 7.f
+#define PROFONDITA 4.f
 
 namespace ghess3 {
 
@@ -296,6 +297,7 @@ float punteggio_minimax(Scacchiera& scacchiera, int pr, float alpha, float beta,
     return migliore;
 }
 
+/*
 int get_profondita(Scacchiera& scacchiera) {
     float v = 0;
     for (int i = 0; i < 63; ++i) {
@@ -312,6 +314,7 @@ int get_profondita(Scacchiera& scacchiera) {
     const int parteIntera = v;
     return v - parteIntera > .5f ? v + 1 : v;
 }
+*/
 
 RisultatoRicerca prossima(Scacchiera& scacchiera, int profondita) {
     RisultatoRicerca risultato;
@@ -322,7 +325,7 @@ RisultatoRicerca prossima(Scacchiera& scacchiera, int profondita) {
         return risultato;
 
     if (profondita <= 0)
-        profondita = get_profondita(scacchiera);
+        profondita = /*get_profondita(scacchiera);*/ PROFONDITA;
     const std::size_t livelli = profondita + 1u;
     std::vector<ListaMosse> listeMosse(livelli);
     std::vector<std::array<Mossa, 2>> mosseKiller(livelli, {MOSSA_NESSUNA, MOSSA_NESSUNA});
